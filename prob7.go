@@ -6,13 +6,14 @@ import (
 )
 
 func main() {
-	primeCount := 0
+	primeCount := 1
 	lastPrime := 0
+	isPrime := true
 	const primeToFind = 10001
 
-	for i := 2; primeCount < primeToFind; i++ {
+	for i := 3; primeCount < primeToFind; i += 2 {
+		isPrime = true
 		upto := int(math.Sqrt(float64(i)))
-		isPrime := true
 		for j := 2; j <= upto; j++ {
 			if i%j == 0 {
 				isPrime = false
@@ -21,7 +22,7 @@ func main() {
 		if isPrime {
 			primeCount++
 			lastPrime = i
-			fmt.Println(fmt.Sprintf("%dth prime is %d", primeCount, lastPrime))
 		}
 	}
+	fmt.Println(fmt.Sprintf("%dth prime is %d", primeCount, lastPrime))
 }
