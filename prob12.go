@@ -3,8 +3,8 @@ package main
 import "fmt"
 
 func divisorCount(a int) int {
-	acc := 0
-	for i := 1; i <= a; i++ {
+	acc := 1
+	for i := 1; i <= a/2; i++ {
 		if a%i == 0 {
 			acc += 1
 		}
@@ -17,8 +17,8 @@ func main() {
 	for i := 1; ; i++ {
 		triangle += i
 		divisors := divisorCount(triangle)
-		fmt.Println(fmt.Sprintf("%d: %d - %d", i, triangle, divisors))
 		if divisors > 500 {
+			fmt.Println(fmt.Sprintf("Final: %d: %d - %d", i, triangle, divisors))
 			return
 		}
 	}
