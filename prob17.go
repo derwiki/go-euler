@@ -14,7 +14,7 @@ func handleTwoDigit(n int, lookup map[int]string) string {
 	if secondDigit == 0 {
 		return lookup[firstDigit]
 	}
-	return fmt.Sprintf("%s-%s", lookup[firstDigit], lookup[secondDigit])
+	return fmt.Sprintf("%s%s", lookup[firstDigit], lookup[secondDigit])
 }
 
 func main() {
@@ -51,20 +51,28 @@ func main() {
 		90: "ninety",
 	}
 
+	acc := 0
+	var numString string
 	for i := 1; i < 1000; i++ {
 		if foo, ok := intToString[i]; ok {
-			fmt.Println(foo)
+			numString = foo
 		} else if i < 100 {
-			fmt.Println(handleTwoDigit(i, intToString))
+			numString = handleTwoDigit(i, intToString)
 		} else {
 			firstDigit := i / 100
 			remainingDigits := i % 100
 			if remainingDigits == 0 {
-				fmt.Println(fmt.Sprintf("%s hundred", intToString[firstDigit]))
+				numString = fmt.Sprintf("%shundred", intToString[firstDigit])
 			} else {
-				fmt.Println(fmt.Sprintf("%s hundred and %s", intToString[firstDigit], handleTwoDigit(remainingDigits, intToString)))
+				numString = fmt.Sprintf("%shundredand%s", intToString[firstDigit], handleTwoDigit(remainingDigits, intToString))
 			}
 		}
+		fmt.Println(numString)
+		acc += len(numString)
 	}
-	fmt.Println("one thousand")
+	numString = "onethousand"
+	fmt.Println(numString)
+	acc += len(numString)
+	fmt.Println(acc)
+
 }
