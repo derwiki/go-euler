@@ -3,13 +3,13 @@ package main
 import "fmt"
 
 func handleTwoDigit(n int, lookup map[int]string) string {
+	if n > 10 && n < 20 {
+		return lookup[n]
+	}
 	firstDigit := int(n/10) * 10
 	secondDigit := n % 10
 	if firstDigit == 0 {
 		return lookup[secondDigit]
-	}
-	if firstDigit == 1 {
-		return lookup[n]
 	}
 	if secondDigit == 0 {
 		return lookup[firstDigit]
