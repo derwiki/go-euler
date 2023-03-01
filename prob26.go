@@ -5,67 +5,39 @@ import (
 	"math/big"
 )
 
-func FindLongestRecurringCycle(s string) string {
-	n := len(s)
-	maxCycle := 0
-	maxCycleStr := ""
-
-	for i := 0; i < n; i++ {
-		for j := i + 1; j < n; j++ {
-			k := i
-			for l := j; l < n && s[k] == s[l]; l, k = l+1, k+1 {
-				if l-j+1 > maxCycle {
-					maxCycle = l - j + 1
-					maxCycleStr = s[j : j+maxCycle]
-				}
-			}
-		}
-	}
-
-	return maxCycleStr
-}
-
 func findRepeatedCycles(s string) string {
+	// TODO cache of longest prefixes to bail out earlier
 	longest := ""
-	// skip the first j characters
-	for j := 0; j < len(s); j++ {
-		for length := 1; j+length < len(s); length++ {
-			searchTerm := s[j : j+length]
-			fmt.Println(j, length, searchTerm, len(s)-j-length)
-			// TODO(derwiki) need to tighten up j < length
-			for k := 1; j < length; k++ {
-				offset := len(searchTerm) * k
-				nextPossibleMatch := s[j+offset : j+offset+len(searchTerm)]
-				fmt.Println(nextPossibleMatch)
-				if nextPossibleMatch == searchTerm {
-					fmt.Println("found cycle")
+	for length := 1; length < len(s); length++ {
+		chunks := splitString(s, length)
+		searchChunk := chunks[0]
+		foundCycles := 0
+		trimmedChunks := chunks[1 : len(chunks)-1]
+		for _, chunk := range trimmedChunks {
+			if searchChunk == chunk {
+				foundCycles++
+				// fmt.Println("found cycle", searchChunk, chunk)
+				// TODO(derwiki) again does this need to be minus _two_
+				if foundCycles == len(chunks)-1 || foundCycles == len(chunks)-2 {
+					//fmt.Println("found repeating cycle", searchChunk, "**", chunk, "**", trimmedChunks)
+					//fmt.Println("return with best cycle, match count:", foundCycles)
+					return searchChunk
 				}
+			} else {
+				//fmt.Println("found break in cycle", searchChunk, chunk)
+				break
+				// if the next chunk doesn't support the cycle, we can bail early
 			}
 		}
 	}
 	return longest
 }
-
-func findRepeatedCycles2(s string) string {
+func findRepeatedCyclesWithSkips(s string) string {
 	longest := ""
 	for i := 0; i < len(s); i++ {
-		for length := 1; length < len(s)/2+1; length++ {
-			chunks := splitString(s, length)
-			searchChunk := chunks[0]
-			foundCycles := 0
-			for _, chunk := range chunks[1:] {
-				if searchChunk == chunk {
-					foundCycles++
-					fmt.Println("found cycle", searchChunk, chunk)
-					if foundCycles == len(chunks)-1 || foundCycles == len(chunks)-2 {
-						fmt.Println("found repeating cycle", searchChunk, chunks[1:])
-						return searchChunk
-					}
-				} else {
-					break
-					// if the next chunk doesn't support the cycle, we can bail early
-				}
-			}
+		cycle := findRepeatedCycles(s[i:])
+		if len(cycle) > len(longest) {
+			longest = cycle
 		}
 	}
 	return longest
@@ -86,16 +58,43 @@ func splitString(s string, chunkSize int) []string {
 }
 
 func main() {
-	one := new(big.Float).SetPrec(1000).SetFloat64(1.0)
-	for i := 990.0; i < 991.0; i++ {
-		inverse := new(big.Float).SetPrec(1000).Quo(one, new(big.Float).SetPrec(1000).SetFloat64(float64((i))))
-		fmt.Println(i, inverse)
+	var precision uint = 10000
+	one := new(big.Float).SetPrec(precision).SetFloat64(1.0)
+	longestD := 0.0
+	longestDLength := 0
+	longestDString := ""
+	// TODO(derwiki) why does this panic if we start at i=1?
+	for i := 2.0; i <= 999.0; i++ {
+		inverse := new(big.Float).SetPrec(precision).Quo(one, new(big.Float).SetPrec(precision).SetFloat64(float64((i))))
+		//fmt.Println(i, inverse)
 		inverseString := inverse.Text('f', -1)
-		fmt.Println(i, inverseString)
+		//fmt.Println(i, inverseString)
 		choppedString := inverseString[2 : len(inverseString)-1]
-		fmt.Println(i, choppedString)
-		fmt.Println()
-		findRepeatedCycles2("appleappleappleapple")
-		findRepeatedCycles2("55001001001001001001001")
+		//fmt.Println(i, choppedString)
+		//fmt.Println()
+		result := findRepeatedCyclesWithSkips(choppedString)
+		if len(result) > longestDLength {
+			longestDLength = len(result)
+			longestD = i
+			longestDString = result
+			fmt.Println("new longestD", longestD, "longestDLength", longestDLength, "cycle", longestDString)
+		}
+	}
+	fmt.Println("overall longestD", longestD, "longestDLength", longestDLength, "cycle", longestDString)
+
+	for _, v := range [][2]string{
+		{"appleappleappleapple", "apple"},
+		{"aappleappleappleapple", "apple"},
+		{"55001001001001001001001", "001"},
+		{"00100502512562814070351758793969849246231155778894472361809045226130653266331658291457286432160804020100502512562814070351758793969849246231155778894472361809045226130653266331658291457286432160804020100502512562814070351758793969849246231155778894472361809045226130653266331658291457286432160804020100", "010050251256281407035175879396984924623115577889447236180904522613065326633165829145728643216080402"},
+	} {
+		input, cycle := v[0], v[1]
+		result := findRepeatedCyclesWithSkips(input)
+		fmt.Println("input", input, "expected", cycle, "result:", result)
+		if result == cycle {
+			fmt.Println("PASSED")
+		} else {
+			fmt.Println("! FAILED")
+		}
 	}
 }
