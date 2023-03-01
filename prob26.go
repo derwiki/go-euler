@@ -54,14 +54,17 @@ func findRepeatedCycles2(s string) string {
 			searchChunk := chunks[0]
 			foundCycles := 0
 			for _, chunk := range chunks[1:] {
-				fmt.Println(i, length, searchChunk, chunk)
 				if searchChunk == chunk {
 					foundCycles++
+					fmt.Println("found cycle", searchChunk, chunk)
+					if foundCycles == len(chunks)-1 || foundCycles == len(chunks)-2 {
+						fmt.Println("found repeating cycle", searchChunk, chunks[1:])
+						return searchChunk
+					}
+				} else {
+					break
+					// if the next chunk doesn't support the cycle, we can bail early
 				}
-			}
-			fmt.Println("found cycles", foundCycles)
-			if foundCycles == len(chunks)-1 {
-				fmt.Println("found repeating cycle")
 			}
 		}
 	}
@@ -93,6 +96,6 @@ func main() {
 		fmt.Println(i, choppedString)
 		fmt.Println()
 		findRepeatedCycles2("appleappleappleapple")
-		// findRepeatedCycles("55001001001001001001001")
+		findRepeatedCycles2("55001001001001001001001")
 	}
 }
