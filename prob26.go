@@ -64,7 +64,7 @@ func main() {
 	longestDLength := 0
 	longestDString := ""
 	// TODO(derwiki) why does this panic if we start at i=1?
-	for i := 2.0; i <= 999.0; i++ {
+	for i := 3.0; i <= 999.0; i += 2 {
 		inverse := new(big.Float).SetPrec(precision).Quo(one, new(big.Float).SetPrec(precision).SetFloat64(float64((i))))
 		//fmt.Println(i, inverse)
 		inverseString := inverse.Text('f', -1)
