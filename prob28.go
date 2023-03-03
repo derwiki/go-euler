@@ -4,36 +4,29 @@ import "fmt"
 
 func main() {
 	/*
-		var grid [1001][1001]int
+			43 44 45 46 47 48 49
+			42 21 22 23 24 25 26
+			41 20  7  8  9 10 27
+			40 19  6  1  2 11 28
+			39 18  5  4  3 12 29
+			38 17 16 15 14 13 30
+			37 36 35 34 33 32 31
 
-		y := 500
-		x := 500
+			1x1 - center
+			3x3 - TR 9, subtract 2: 9, 7, 5, 3
+			5x5 - TR 25, subtract 4: 25, 21, 17, 13
+			7x7 - TR 49, subtract 6: 49, 43, 37, 31
+
+		    i := 1...1001 by twos {}
 	*/
-	var grid [5][5]int
 
-	y := 2
-	x := 2
-	i := 1
-	grid[y][x] = i
-
-	// move right and go down as fas as you can
-	grid[y][x+1] = 2
-	grid[y+1][x+1] = 3
-
-	// now on bottom row, go left as far as you can
-	grid[y+1][x] = 4
-	grid[y+1][x-1] = 5
-
-	// when you're as far left, start going up
-	grid[y][x-1] = 6
-	grid[y-1][x-1] = 7
-
-	// now that we're on top, go right as far as you can
-	grid[y-1][x] = 8
-	grid[y-1][x+1] = 9
-
-	fmt.Println(grid)
-	for _, row := range grid {
-		fmt.Println(row)
+	acc := 1 // center square
+	for i := 3; i <= 1001; i += 2 {
+		curLevel := i * i
+		curLevel += i*i - (i - 1)
+		curLevel += i*i - (i-1)*2
+		curLevel += i*i - (i-1)*3
+		acc += curLevel
 	}
+	fmt.Println("acc", acc)
 }
