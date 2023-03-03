@@ -22,11 +22,7 @@ func main() {
 
 	acc := 1 // center square
 	for i := 3; i <= 1001; i += 2 {
-		curLevel := i * i
-		curLevel += i*i - (i - 1)
-		curLevel += i*i - (i-1)*2
-		curLevel += i*i - (i-1)*3
-		acc += curLevel
+		acc += 4*i*i - (i-1)*6
 	}
 	fmt.Println("acc", acc)
 }
